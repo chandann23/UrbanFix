@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { RootStackParamList } from '../app/index';
 import * as Location from 'expo-location';
+import { useInsertReport } from '@/api';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Report'>;
 
@@ -42,6 +43,25 @@ export default function ReportScreen({ route, navigation }: Props) {
     { icon: '🚸', title: 'Safety Hazard', description: 'Report dangerous conditions' },
     { icon: '', title: 'Others', description: 'Report other issues' },
   ];
+
+
+
+
+  const { mutate: insertReport } = useInsertReport();
+
+  const handleSubmit = async () => {
+    const report = {
+      title: title,
+      description: description,
+      location: location,
+      status: selectedIssue?.title,
+      category: 'road',
+      image_url: imageUri,
+    };
+    await insertReport(report);
+    navigation.navigate('AllReports');
+  };
+
 
   const handleIssueSelect = (issue: IssueType) => {
     setSelectedIssue(issue);
@@ -206,6 +226,9 @@ export default function ReportScreen({ route, navigation }: Props) {
             styles.submitButton,
             pressed && styles.buttonPressed
           ]}
+          onPress={() => {
+            handleSubmit();
+          }}
         >
           <Text style={styles.submitButtonText}>Submit Report</Text>
         </Pressable>

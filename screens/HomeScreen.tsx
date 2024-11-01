@@ -1,6 +1,5 @@
 import React from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../app/index';
 
 import {
   Platform,
@@ -13,8 +12,13 @@ import {
   Dimensions,
   ImageBackground,
 } from 'react-native';
+import { RootStackParamList } from '../app/index';
+
 import { router, useRouter } from 'expo-router';
 import { Stack } from 'expo-router';
+import { useAuth } from '@/providers/AuthProvider';
+import Auth from '@/components/auth';
+import { supabase } from '@/lib/supabase';
 
 const { width } = Dimensions.get('window');
 
@@ -23,8 +27,10 @@ type HomeScreenProps = {
 };
 
 
-export default function HomeScreen() {
-  const navigation = useRouter();
+
+export default function HomeScreen({navigation} : HomeScreenProps) {
+
+  const {session} = useAuth();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -40,12 +46,25 @@ export default function HomeScreen() {
             source={{ uri: 'https://raw.githubusercontent.com/NativeScript/code-samples/main/demo-react/app/assets/ns.png' }}
             style={styles.logo}
           />
-          <Pressable
-            style={styles.signInButton}
-            onPress={() => navigation.push('/(auth)/sign-in')}
-          >
-            <Text style={styles.signInText}>Sign In</Text>
+
+{session ? <Pressable
+               style={styles.signInButton}
+              onPress={() => supabase.auth.signOut()}
+            >  
+
+                     <Text style={styles.signInText}>Sign Out</Text>
           </Pressable>
+: <Pressable
+               style={styles.signInButton}
+              onPress={() => navigation.navigate('SignIn')}
+            >  
+
+                     <Text style={styles.signInText}>Sign In</Text>
+          </Pressable>
+ }
+
+
+         
         </View>
 
         <View style={styles.content}>
@@ -94,7 +113,7 @@ export default function HomeScreen() {
                 styles.getStartedButton,
                 pressed && styles.buttonPressed
               ]}
-              onPress={() => console.log('Get started')}
+              onPress={() =>  navigation.navigate('Report', { message: 'Welcome to UrbanFix!' })}
             >
               <Text style={styles.getStartedText}>Get Started</Text>
             </Pressable>
@@ -104,7 +123,7 @@ export default function HomeScreen() {
                 styles.registerButton,
                 pressed && styles.buttonPressed
               ]}
-              onPress={() => navigation.push('/(auth)/sign-up')}
+              onPress={() => navigation.navigate('SignUp')}
             >
               <Text style={styles.registerText}>Create Account</Text>
             </Pressable>

@@ -1,26 +1,34 @@
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, Pressable } from 'react-native';
 import React, { useState } from 'react';
-import Button from '../../components/Button';
+import Button from '@/components/Button';
 import { Link, Stack } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/providers/AuthProvider';
 
-const SignUpScreen = () => {
+const SignInScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const {session} = useAuth();
 
-  async function signUpWithEmail() {
+  async function signInWithEmail() {
+  
     setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (error) Alert.alert(error.message);
     setLoading(false);
+
+
   }
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: 'Sign up' }} />
+      <Stack.Screen options={{ title: 'Sign in' }} />
 
       <Text style={styles.label}>Email</Text>
       <TextInput
@@ -40,14 +48,11 @@ const SignUpScreen = () => {
       />
 
       <Button
-        onPress={signUpWithEmail}
+        onPress={signInWithEmail}
         disabled={loading}
-        text={loading ? 'Creating account...' : 'Create account'}
+        text={loading ? 'Signing in...' : 'Sign in'}
       />
-      <Link href="/sign-in" style={styles.textButton}>
-        Sign in
-      </Link>
-    </View>
+     </View>
   );
 };
 
@@ -77,4 +82,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUpScreen;
+export default SignInScreen;

@@ -1,13 +1,20 @@
-import { Stack } from "expo-router";
-import AuthProvider from '../providers/AuthProvider'; // Adjust the import path as needed
+import AuthProvider, { useAuth } from "@/providers/AuthProvider";
+import QueryProvider from "@/providers/QueryProvider";
+import { Redirect, Slot, Stack } from "expo-router";
 
 export default function RootLayout() {
+  const { session } = useAuth();
+  if (session) {
+    return <Redirect href={'/'} />;
+  }
+
   return (
     <AuthProvider>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        {/* You can add more screens or modify screen options here */}
-      </Stack>
+      <QueryProvider>
+
+      <Slot />
+      </QueryProvider>
     </AuthProvider>
   );
 }
+

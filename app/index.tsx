@@ -1,13 +1,18 @@
-import { View, ActivityIndicator } from 'react-native';
-import { useAuth } from '@/providers/AuthProvider';
-import { Redirect } from 'expo-router';
-import HomeScreen from '@/screens/HomeScreen';
-import ReportScreen from '@/screens/ReportScreen';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import HomeScreen from '../screens/HomeScreen';
+import ReportScreen from '../screens/ReportScreen';
+import { ReportList } from '../screens/AllReports';
+import SignIn from '../screens/sign-in';
+import Constants from 'expo-constants';
+import SignInScreen from '../screens/sign-in';
+import SignUpScreen from '@/screens/sign-up';
 
 export type RootStackParamList = {
   Home: undefined;
+  SignUp: undefined;
   SignIn: undefined;
   Report: { message: string };
   AllReports: undefined;
@@ -15,42 +20,10 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+export default function App() {
 
-const mockNavigation = {
-  navigate: (screenName: string) => console.log(`Navigating to ${screenName}`),
-  goBack: () => console.log('Going back'),
-  // Add other navigation methods you're using
-};
-
-const mockRoute = {
-  params: {
-    message: "Welcome to Report Screen"
-  }
-};
-
-
-
-export default function Index() {
-  const { session, loading } = useAuth();
-
-
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  // If no session and not on auth pages, show the HomeScreen
-  if (!session) {
-    return <HomeScreen />;
-  }
-
-
-
-  // If authenticated, redirect to the main app area
   return (
+
     <Stack.Navigator>
       <Stack.Screen
         name="Home"
@@ -59,15 +32,35 @@ export default function Index() {
           headerShown: false,
         }}
       />
+
+      <Stack.Screen
+        name="SignIn"
+        component={SignInScreen}
+        options={{
+        }}
+      />
+      <Stack.Screen
+        name="SignUp"
+        component={SignUpScreen}
+        options={{
+          title: 'Create Account',
+        }}
+      />
       <Stack.Screen
         name="Report"
         component={ReportScreen}
         options={{
-          title: 'Report Issue',
+        }} />
+      <Stack.Screen
+        name="AllReports"
+        component={ReportList}
+        options={{
+          title: 'All Reports',
         }}
       />
 
-    </Stack.Navigator>
 
-  )
+    </Stack.Navigator>
+  );
 }
+
